@@ -68,10 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const files = await response.json();
 
       const filesContainer = document.querySelector(".files-container");
-      const uploadButton = document.querySelector(".upload-button");
       if (!filesContainer) return;
 
-      // Create the file explorer header
+      // Create the file explorer structure
       const explorerHTML = `
           <div class="file-explorer">
               <div class="explorer-header">
@@ -84,72 +83,56 @@ document.addEventListener("DOMContentLoaded", () => {
                   <div class="header-item">Actions</div>
               </div>
               <div class="explorer-body">
-                  ${
-                    files.length === 0
-                      ? '<div class="no-files">No files uploaded yet</div>'
-                      : files
-                          .map(
-                            (file) => `
-                          <div class="file-row" data-filename="${file.name}">
-                              <div class="file-cell">
-                                  <input type="checkbox" class="file-checkbox" />
-                                  <i class="fas ${getFileIcon(file.name)}"></i>
-                                  <span>${file.name}</span>
-                              </div>
-                              <div class="file-cell">${formatFileSize(
-                                file.size
-                              )}</div>
-                              <div class="file-cell">${formatDate(
-                                file.modifiedDate
-                              )}</div>
-                              <div class="file-cell actions">
-                                  <button onclick="downloadFile('${
-                                    file.name
-                                  }')" title="Download">
-                                      <i class="fas fa-download"></i>
-                                  </button>
-                                  <button onclick="deleteFile('${
-                                    file.name
-                                  }')" title="Delete">
-                                      <i class="fas fa-trash"></i>
-                                  </button>
-                              </div>
+                  ${files
+                    .map(
+                      (file) => `
+                      <div class="file-row" data-filename="${file.name}">
+                          <div class="file-cell">
+                              <input type="checkbox" class="file-checkbox" />
+                              <i class="fas ${getFileIcon(file.name)}"></i>
+                              <span>${file.name}</span>
                           </div>
-                      `
-                          )
-                          .join("")
-                  }
+                          <div class="file-cell">${formatFileSize(
+                            file.size
+                          )}</div>
+                          <div class="file-cell">${formatDate(
+                            file.modifiedDate
+                          )}</div>
+                          <div class="file-cell actions">
+                              <button onclick="downloadFile('${
+                                file.name
+                              }')" title="Download">
+                                  <i class="fas fa-download"></i>
+                              </button>
+                              <button onclick="deleteFile('${
+                                file.name
+                              }')" title="Delete">
+                                  <i class="fas fa-trash"></i>
+                              </button>
+                          </div>
+                      </div>
+                  `
+                    )
+                    .join("")}
               </div>
           </div>
-          ${
-            files.length > 0
-              ? `
-              <div class="bulk-actions">
-                  <span class="selected-count">0 selected</span>
-                  <button class="bulk-delete" disabled>
-                      <i class="fas fa-trash"></i> Delete Selected
-                  </button>
-              </div>
-          `
-              : ""
-          }
+          <div class="bulk-actions">
+              <span class="selected-count">0 selected</span>
+              <button class="bulk-delete" disabled>
+                  <i class="fas fa-trash"></i> Delete Selected
+              </button>
+          </div>
       `;
 
       filesContainer.innerHTML = explorerHTML;
 
-      // Handle visibility of upload button
-      const isHomePage =
-        window.location.pathname === "/" ||
-        window.location.pathname === "/index.html";
-      if (uploadButton) {
-        uploadButton.style.display =
-          !isHomePage || files.length === 0 ? "inline-flex" : "none";
-      }
-
-      // Add event listeners for the new functionality
+      // Re-attach event listeners
       setupFileExplorerListeners();
+
+      return true;
     } catch (error) {
       console.error("Error loading files:", error);
+      return false;
     }
   }
 
@@ -211,29 +194,58 @@ function downloadFile(filename) {
 }
 
 async function deleteFile(filename) {
-  document.getElementById("deleteFileName").textContent = filename;
-  showModal("deleteModal");
+  const result = await Swal.fire({
+    title: "Delete File?",
+    html: `Are you sure you want to delete <strong>${filename}</strong>?<br><br>
+           <span style="color: #dc2626; font-size: 0.9em;">
+               <i class="fas fa-exclamation-triangle"></i> 
+               This action cannot be undone
+           </span>`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: "#64748b",
+    confirmButtonText: "Yes, delete it!",
+    cancelButtonText: "Cancel",
+    reverseButtons: true,
+  });
 
-  const deleteButton = document.querySelector("#deleteModal .delete");
-  const cancelButton = document.querySelector("#deleteModal .cancel");
-
-  deleteButton.onclick = async () => {
-    hideModal("deleteModal");
+  if (result.isConfirmed) {
     try {
       const response = await fetch(`/api/files/${filename}`, {
         method: "DELETE",
       });
+
       if (response.ok) {
-        loadFiles(); // Refresh the list
+        await Swal.fire({
+          title: "Deleted!",
+          text: `${filename} has been deleted.`,
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        await loadFiles();
+
+        const filesContainer = document.querySelector(".files-container");
+        if (filesContainer) {
+          filesContainer.style.opacity = "0";
+          setTimeout(() => {
+            filesContainer.style.opacity = "1";
+          }, 150);
+        }
+      } else {
+        throw new Error("Failed to delete file");
       }
     } catch (error) {
-      console.error("Error deleting file:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "Failed to delete the file.",
+        icon: "error",
+        confirmButtonColor: "#6366f1",
+      });
     }
-  };
-
-  cancelButton.onclick = () => {
-    hideModal("deleteModal");
-  };
+  }
 }
 
 // Close modals when clicking outside
@@ -270,6 +282,11 @@ function setupFileExplorerListeners() {
       sortFiles(sortBy);
     });
   });
+
+  const bulkDeleteButton = document.querySelector(".bulk-delete");
+  if (bulkDeleteButton) {
+    bulkDeleteButton.addEventListener("click", deleteSelectedFiles);
+  }
 }
 
 function updateBulkActions() {
@@ -298,20 +315,110 @@ async function deleteSelectedFiles() {
     (checkbox) => checkbox.closest(".file-row").dataset.filename
   );
 
-  if (confirm(`Are you sure you want to delete ${fileNames.length} files?`)) {
+  if (fileNames.length === 0) return;
+
+  const result = await Swal.fire({
+    title: "Delete Selected Files?",
+    html: `Are you sure you want to delete ${fileNames.length} file${
+      fileNames.length > 1 ? "s" : ""
+    }?<br><br>
+               <div style="max-height: 150px; overflow-y: auto; margin-bottom: 1em;">
+                   ${fileNames
+                     .map(
+                       (name) =>
+                         `<div style="margin: 0.2em 0;"><i class="fas fa-file"></i> ${name}</div>`
+                     )
+                     .join("")}
+               </div>
+               <span style="color: #dc2626; font-size: 0.9em;">
+                   <i class="fas fa-exclamation-triangle"></i> 
+                   This action cannot be undone
+               </span>`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#dc2626",
+    cancelButtonColor: "#64748b",
+    confirmButtonText: `Yes, delete ${fileNames.length > 1 ? "them" : "it"}!`,
+    cancelButtonText: "Cancel",
+    reverseButtons: true,
+  });
+
+  if (result.isConfirmed) {
+    let successCount = 0;
+    let failCount = 0;
+
+    // Show loading state
+    const loadingAlert = Swal.fire({
+      title: "Deleting files...",
+      html: "Please wait...",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    // Delete files one by one
     for (const filename of fileNames) {
       try {
         const response = await fetch(`/api/files/${filename}`, {
           method: "DELETE",
         });
-        if (!response.ok) {
-          console.error(`Failed to delete ${filename}`);
+        if (response.ok) {
+          successCount++;
+        } else {
+          failCount++;
         }
       } catch (error) {
+        failCount++;
         console.error(`Error deleting ${filename}:`, error);
       }
     }
-    loadFiles(); // Refresh the list
+
+    // Close loading alert
+    if (loadingAlert) {
+      Swal.close();
+    }
+
+    // Show result and refresh files
+    if (successCount > 0) {
+      await Swal.fire({
+        title: "Success!",
+        html: `Successfully deleted ${successCount} file${
+          successCount > 1 ? "s" : ""
+        }<br>
+                      ${
+                        failCount > 0
+                          ? `Failed to delete ${failCount} file${
+                              failCount > 1 ? "s" : ""
+                            }`
+                          : ""
+                      }`,
+        icon: failCount === 0 ? "success" : "warning",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      // Refresh the file list
+      try {
+        const filesContainer = document.querySelector(".files-container");
+        if (filesContainer) {
+          filesContainer.style.opacity = "0";
+          await new Promise((resolve) => setTimeout(resolve, 150));
+          await loadFiles();
+          filesContainer.style.opacity = "1";
+        }
+      } catch (error) {
+        console.error("Error refreshing files:", error);
+      }
+    } else {
+      await Swal.fire({
+        title: "Error!",
+        text: "Failed to delete files.",
+        icon: "error",
+        confirmButtonColor: "#6366f1",
+      });
+    }
   }
 }
 
