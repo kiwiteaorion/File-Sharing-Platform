@@ -49,12 +49,16 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
-app.get("/my-files", (req, res) => {
+app.get("/pages/my-files", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/pages/my-files.html"));
 });
 
-app.get("/shared", (req, res) => {
+app.get("/pages/shared", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/pages/shared.html"));
+});
+
+app.get("/pages/analytics", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/pages/analytics.html"));
 });
 
 // File upload endpoints
