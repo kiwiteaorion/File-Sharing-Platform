@@ -83,9 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
                   <div class="header-item">Actions</div>
               </div>
               <div class="explorer-body">
-                  ${files
-                    .map(
-                      (file) => `
+                  ${
+                    files.length > 0
+                      ? files
+                          .map(
+                            (file) => `
                       <div class="file-row" data-filename="${file.name}">
                           <div class="file-cell">
                               <input type="checkbox" class="file-checkbox" />
@@ -111,28 +113,27 @@ document.addEventListener("DOMContentLoaded", () => {
                               </button>
                           </div>
                       </div>
-                  `
-                    )
-                    .join("")}
+                    `
+                          )
+                          .join("")
+                      : '<div class="no-files">No files found</div>'
+                  }
               </div>
           </div>
-          <div class="bulk-actions">
+          <div class="selected-actions">
               <span class="selected-count">0 selected</span>
-              <button class="bulk-delete" disabled>
-                  <i class="fas fa-trash"></i> Delete Selected
+              <button class="delete-selected" onclick="deleteSelectedFiles()">
+                  <i class="fas fa-trash"></i>
+                  Delete Selected
               </button>
-          </div>
-      `;
+          </div>`;
 
       filesContainer.innerHTML = explorerHTML;
 
-      // Re-attach event listeners
-      setupFileExplorerListeners();
-
-      return true;
+      // Add event listeners after updating the DOM
+      setupEventListeners();
     } catch (error) {
       console.error("Error loading files:", error);
-      return false;
     }
   }
 
@@ -256,56 +257,41 @@ window.onclick = function (event) {
 };
 
 // Add these new functions
-function setupFileExplorerListeners() {
-  const selectAll = document.getElementById("selectAll");
-  const fileCheckboxes = document.querySelectorAll(".file-checkbox");
-  const bulkDelete = document.querySelector(".bulk-delete");
-  const selectedCount = document.querySelector(".selected-count");
-  const sortableHeaders = document.querySelectorAll(".sortable");
-
-  if (selectAll) {
-    selectAll.addEventListener("change", (e) => {
-      fileCheckboxes.forEach((checkbox) => {
+function setupEventListeners() {
+  // Select all checkbox functionality
+  const selectAllCheckbox = document.getElementById("selectAll");
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener("change", (e) => {
+      const checkboxes = document.querySelectorAll(".file-checkbox");
+      checkboxes.forEach((checkbox) => {
         checkbox.checked = e.target.checked;
       });
-      updateBulkActions();
+      updateSelectedCount();
     });
   }
 
-  fileCheckboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", updateBulkActions);
+  // Individual checkbox functionality
+  const checkboxes = document.querySelectorAll(".file-checkbox");
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", updateSelectedCount);
   });
 
+  // Sortable columns
+  const sortableHeaders = document.querySelectorAll(".sortable");
   sortableHeaders.forEach((header) => {
     header.addEventListener("click", () => {
-      const sortBy = header.dataset.sort;
-      sortFiles(sortBy);
+      sortFiles(header.dataset.sort);
     });
   });
-
-  const bulkDeleteButton = document.querySelector(".bulk-delete");
-  if (bulkDeleteButton) {
-    bulkDeleteButton.addEventListener("click", deleteSelectedFiles);
-  }
 }
 
-function updateBulkActions() {
-  const selectedFiles = document.querySelectorAll(".file-checkbox:checked");
-  const bulkDelete = document.querySelector(".bulk-delete");
-  const selectedCount = document.querySelector(".selected-count");
-  const selectAll = document.getElementById("selectAll");
-
-  if (bulkDelete && selectedCount) {
-    const count = selectedFiles.length;
-    selectedCount.textContent = `${count} selected`;
-    bulkDelete.disabled = count === 0;
-
-    // Update select all checkbox state
-    if (selectAll) {
-      const totalFiles = document.querySelectorAll(".file-checkbox").length;
-      selectAll.checked = count === totalFiles && count !== 0;
-      selectAll.indeterminate = count > 0 && count < totalFiles;
-    }
+function updateSelectedCount() {
+  const selectedCount = document.querySelectorAll(
+    ".file-checkbox:checked"
+  ).length;
+  const countElement = document.querySelector(".selected-count");
+  if (countElement) {
+    countElement.textContent = `${selectedCount} selected`;
   }
 }
 

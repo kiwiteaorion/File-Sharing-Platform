@@ -533,3 +533,45 @@ input[type="checkbox"] {
   background: var(--bg-color);
   color: var(--primary-color);
 }
+
+/* Delete Selected Button Styles */
+.selected-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.selected-count {
+  color: var(--text-secondary);
+}
+
+.delete-selected {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-selected:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.delete-selected:active {
+  transform: translateY(0);
+}
+
+.delete-selected i {
+  font-size: 0.875rem;
+}
