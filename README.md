@@ -85,6 +85,12 @@ A sleek, modern file sharing platform built with Node.js and Express, featuring 
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## 👥 Contact & Support
+
+- Creator: [Tarik Imamovic](https://github.com/kiwiteaorion)
+- Email: [imamovic.tari@gmail.com](mailto:imamovic.tari@gmail.com)
+- GitHub: [@kiwiteaorion](https://github.com/kiwiteaorion)
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
