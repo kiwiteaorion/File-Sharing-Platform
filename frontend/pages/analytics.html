@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics - File Sharing Platform</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <!-- Add Chart.js for beautiful charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar">
+        <div class="logo">
+          <i class="fas fa-cloud"></i>
+          <span>FileShare</span>
+        </div>
+        <ul class="nav-links">
+          <li>
+            <a href="/">
+              <i class="fas fa-home"></i>
+              <span>Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="/pages/my-files.html">
+              <i class="fas fa-folder"></i>
+              <span>My Files</span>
+            </a>
+          </li>
+          <li>
+            <a href="/pages/shared.html">
+              <i class="fas fa-share-alt"></i>
+              <span>Shared</span>
+            </a>
+          </li>
+          <li class="active">
+            <a href="/pages/analytics.html">
+              <i class="fas fa-chart-bar"></i>
+              <span>Analytics</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="content-header">
+          <h1>Storage Analytics</h1>
+          <div class="refresh-button">
+            <button onclick="loadAnalytics()">
+              <i class="fas fa-sync-alt"></i>
+              Refresh
+            </button>
+          </div>
+        </header>
+
+        <div class="analytics-grid">
+          <!-- Storage Overview Card -->
+          <div class="analytics-card storage-overview">
+            <h2>Storage Overview</h2>
+            <div class="storage-progress">
+              <div class="progress-ring">
+                <canvas id="storageChart"></canvas>
+              </div>
+              <div class="storage-details">
+                <div class="storage-item">
+                  <span class="label">Used Space</span>
+                  <span class="value" id="usedSpace">0 GB</span>
+                </div>
+                <div class="storage-item">
+                  <span class="label">Free Space</span>
+                  <span class="value" id="freeSpace">0 GB</span>
+                </div>
+                <div class="storage-item">
+                  <span class="label">Total Space</span>
+                  <span class="value" id="totalSpace">0 GB</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- File Types Distribution -->
+          <div class="analytics-card file-types">
+            <h2>File Types Distribution</h2>
+            <canvas id="fileTypesChart"></canvas>
+          </div>
+
+          <!-- Recent Files -->
+          <div class="analytics-card recent-files">
+            <h2>Recent Files</h2>
+            <div class="recent-files-list" id="recentFilesList">
+              <!-- Recent files will be added here dynamically -->
+            </div>
+          </div>
+
+          <!-- Storage Trends -->
+          <div class="analytics-card storage-trends">
+            <h2>Storage Trends</h2>
+            <canvas id="storageTrendsChart"></canvas>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="/js/analytics.js"></script>
+  </body>
+</html>

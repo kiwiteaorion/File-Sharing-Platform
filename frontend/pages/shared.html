@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shared Files - File Sharing Platform</title>
+    <link rel="stylesheet" href="../style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar">
+        <div class="logo">
+          <i class="fas fa-cloud"></i>
+          <span>FileShare</span>
+        </div>
+        <ul class="nav-links">
+          <li>
+            <a href="/">
+              <i class="fas fa-home"></i>
+              <span>Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="/pages/my-files.html">
+              <i class="fas fa-folder"></i>
+              <span>My Files</span>
+            </a>
+          </li>
+          <li class="active">
+            <a href="/pages/shared.html">
+              <i class="fas fa-share-alt"></i>
+              <span>Shared</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="content-header">
+          <h1>Shared Files</h1>
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search shared files..." />
+          </div>
+        </header>
+
+        <div class="content">
+          <div class="files-container">
+            <!-- Shared files will be dynamically added here -->
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="../script.js"></script>
+  </body>
+</html>

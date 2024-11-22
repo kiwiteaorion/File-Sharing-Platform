@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Sharing Platform</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar">
+        <div class="logo">
+          <i class="fas fa-cloud"></i>
+          <span>FileShare</span>
+        </div>
+        <ul class="nav-links">
+          <li class="active">
+            <a href="/">
+              <i class="fas fa-home"></i>
+              <span>Home</span>
+            </a>
+          </li>
+          <li>
+            <a href="/pages/my-files.html">
+              <i class="fas fa-folder"></i>
+              <span>My Files</span>
+            </a>
+          </li>
+          <li>
+            <a href="/pages/shared.html">
+              <i class="fas fa-share-alt"></i>
+              <span>Shared</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="content-header">
+          <h1>Recent Files</h1>
+          <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search files..." />
+          </div>
+        </header>
+
+        <div class="content">
+          <button class="upload-button">
+            <i class="fas fa-upload"></i>
+            Upload
+          </button>
+
+          <div class="files-container">
+            <!-- Files will be dynamically added here -->
+          </div>
+        </div>
+      </main>
+    </div>
+    <script src="script.js"></script>
+    <!-- Add these modal elements -->
+    <div class="modal" id="uploadModal">
+      <div class="modal-content">
+        <h2>Upload Files</h2>
+        <p>Selected file: <span id="selectedFileName"></span></p>
+        <div class="modal-buttons">
+          <button class="modal-button cancel">Cancel</button>
+          <button class="modal-button confirm">Upload</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="deleteModal">
+      <div class="modal-content">
+        <h2>Delete File</h2>
+        <p>
+          Are you sure you want to delete <span id="deleteFileName"></span>?
+        </p>
+        <p class="warning">This action cannot be undone.</p>
+        <div class="modal-buttons">
+          <button class="modal-button cancel">Cancel</button>
+          <button class="modal-button delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
